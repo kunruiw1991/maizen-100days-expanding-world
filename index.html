@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+  <title>JJ &amp; Mikey · 100 Days Expanding World 3D</title>
+  <meta name="description" content="Playable 3D Minecraft voxel recreation of Maizen's JJ and Mikey Survived 100 Days in an Expanding World (youtu.be/t5wy_OsuMvM)." />
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+  <main class="studio" id="studio">
+    <!-- Full-bleed 3D Voxel Canvas -->
+    <canvas id="game-canvas" aria-label="JJ and Mikey 100 Days Expanding World 3D"></canvas>
+
+    <!-- Single Compact Wordless Floating Top Pill (critters-coloring-game design) -->
+    <header class="toolbar" id="toolbar" role="banner">
+      <!-- Visual 8-Era Milestone Gallery -->
+      <button class="icon-btn" id="btn-gallery" aria-label="100-Day Eras" title="100-Day Eras">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="3" y="3" width="7" height="7" rx="1.6"/>
+          <rect x="14" y="3" width="7" height="7" rx="1.6"/>
+          <rect x="3" y="14" width="7" height="7" rx="1.6"/>
+          <rect x="14" y="14" width="7" height="7" rx="1.6"/>
+        </svg>
+      </button>
+
+      <span class="sep" aria-hidden="true"></span>
+
+      <!-- Day Counter + Expand World Sun Button -->
+      <div class="btn-group">
+        <button class="pill-chip day-chip" id="btn-expand-day" aria-label="Expand World Next Day" title="Expand World (+Day)">
+          <span class="emoji-ico" aria-hidden="true">☀️</span>
+          <span class="mono-val" id="day-counter">D01</span>
+          <span class="border-val" id="border-size">1×1</span>
+        </button>
+      </div>
+
+      <span class="sep" aria-hidden="true"></span>
+
+      <!-- Dimension Quick Switcher (Overworld / Nether / The End) -->
+      <div class="btn-group" role="tablist" aria-label="Dimensions">
+        <button class="icon-btn dim-btn active" id="btn-dim-overworld" data-dim="overworld" aria-label="Overworld" title="Overworld">
+          <span class="emoji-ico" aria-hidden="true">🌳</span>
+        </button>
+        <button class="icon-btn dim-btn" id="btn-dim-nether" data-dim="nether" aria-label="The Nether" title="Nether (Day 61)">
+          <span class="emoji-ico" aria-hidden="true">🔥</span>
+        </button>
+        <button class="icon-btn dim-btn" id="btn-dim-end" data-dim="end" aria-label="The End: Ender Dragon" title="The End (Day 100)">
+          <span class="emoji-ico" aria-hidden="true">🐉</span>
+        </button>
+      </div>
+
+      <span class="sep" aria-hidden="true"></span>
+
+      <!-- Compact Resource Counters (Icons + Numbers only, zero clutter) -->
+      <div class="res-strip" id="res-strip" aria-label="Inventory">
+        <span class="res-chip" title="Wood"><span aria-hidden="true">🪵</span><b id="res-wood">0</b></span>
+        <span class="res-chip" title="Diamonds"><span aria-hidden="true">💎</span><b id="res-diamond">0</b></span>
+        <span class="res-chip" title="Eyes of Ender"><span aria-hidden="true">👁️</span><b id="res-eye">0</b></span>
+        <span class="res-chip hearts-chip" title="Hearts"><span aria-hidden="true">❤️</span><b id="hp-val">10</b></span>
+      </div>
+
+      <span class="sep" aria-hidden="true"></span>
+
+      <!-- Utility Icons: Sound + Inline Reset -->
+      <div class="btn-group">
+        <button class="icon-btn active-soft" id="btn-sound" aria-label="Toggle Sound" aria-pressed="true" title="Sound">
+          <svg class="ico-sound-on" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/>
+            <path d="M15.5 8.5a5 5 0 0 1 0 7"/>
+            <path d="M19 5a9.5 9.5 0 0 1 0 14"/>
+          </svg>
+          <svg class="ico-sound-off hidden" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/>
+            <line x1="22" y1="9" x2="16" y2="15"/>
+            <line x1="16" y1="9" x2="22" y2="15"/>
+          </svg>
+        </button>
+
+        <div class="clear-wrap" id="reset-wrap">
+          <button class="icon-btn" id="btn-reset" aria-label="Restart Day 1" title="Restart">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M3 12a9 9 0 1 0 3-6.7L3 8"/>
+              <polyline points="3 3 3 8 8 8"/>
+            </svg>
+          </button>
+          <div class="clear-confirm hidden" id="reset-confirm">
+            <button class="icon-btn confirm-yes" id="btn-reset-yes" aria-label="Confirm Restart">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="20 6 9 17 4 12"/>
+              </svg>
+            </button>
+            <button class="icon-btn confirm-no" id="btn-reset-no" aria-label="Cancel Restart">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="18" y1="6" x2="6" y2="18"/>
+                <line x1="6" y1="6" x2="18" y2="18"/>
+              </svg>
+            </button>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- Ender Dragon Boss Bar (Only visible in The End!) -->
+    <div class="boss-bar hidden" id="boss-bar" aria-label="Ender Dragon Health">
+      <span class="emoji-ico" aria-hidden="true">🐉</span>
+      <div class="boss-track">
+        <div class="boss-fill" id="boss-fill" style="width: 100%"></div>
+      </div>
+      <span class="crystal-badge" id="crystal-badge">🔮 4</span>
+    </div>
+
+    <!-- Brief Visual Toast Banner (e.g. "+6 Blocks!" / "💎" / "🐉 VICTORY!") -->
+    <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+    <!-- Streamlined Floating Bottom Minecraft Hotbar Pill (Icon-only circular buttons!) -->
+    <footer class="hotbar-pill" id="hotbar" role="toolbar" aria-label="Hotbar">
+      <button class="tool-btn active" data-slot="pickaxe" id="slot-pickaxe" aria-label="Pickaxe: Mine & Harvest" title="Mine (1)">
+        <span class="tool-emoji" aria-hidden="true">⛏️</span>
+      </button>
+      <button class="tool-btn" data-slot="sword" id="slot-sword" aria-label="Sword: Fight Mobs & Dragon" title="Sword (2)">
+        <span class="tool-emoji" aria-hidden="true">⚔️</span>
+      </button>
+      <button class="tool-btn" data-slot="upgrade" id="slot-upgrade" aria-label="Craft & Enchant Gear" title="Upgrade Gear (3)">
+        <span class="tool-emoji" aria-hidden="true">🛡️</span>
+        <span class="tier-dot" id="tier-dot">0</span>
+      </button>
+      <button class="tool-btn" data-slot="eye" id="slot-eye" aria-label="Eye of Ender / Portal Jump" title="Eye of Ender (4)">
+        <span class="tool-emoji" aria-hidden="true">👁️</span>
+      </button>
+      <button class="tool-btn" data-slot="apple" id="slot-apple" aria-label="Golden Apple Heal" title="Golden Apple (5)">
+        <span class="tool-emoji" aria-hidden="true">🍎</span>
+      </button>
+      <button class="tool-btn expand-action" data-slot="expand" id="slot-expand" aria-label="Expand World Border (+Era)" title="Expand World (Space/E)">
+        <span class="tool-emoji" aria-hidden="true">🌍</span>
+      </button>
+    </footer>
+
+    <!-- Compact iPad / Mobile Touch Controls (auto-shown on coarse pointer or narrow screens) -->
+    <div class="touch-pad" id="touch-pad" aria-hidden="true">
+      <div class="stick-base" id="stick-base">
+        <div class="stick-knob" id="stick-knob"></div>
+      </div>
+      <div class="touch-actions">
+        <button class="touch-btn" id="btn-touch-jump" aria-label="Jump">⬆️</button>
+        <button class="touch-btn primary" id="btn-touch-act" aria-label="Mine / Attack">⚡</button>
+      </div>
+    </div>
+
+    <!-- Pure Visual 8-Era 100-Day Gallery Overlay -->
+    <div class="gallery-overlay hidden" id="gallery-overlay" role="dialog" aria-modal="true" aria-label="100-Day Milestones">
+      <div class="gallery-backdrop" id="gallery-backdrop"></div>
+      <div class="gallery-panel">
+        <button class="icon-btn gallery-close" id="btn-gallery-close" aria-label="Close">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="18" y1="6" x2="6" y2="18"/>
+            <line x1="6" y1="6" x2="18" y2="18"/>
+          </svg>
+        </button>
+        <div class="gallery-grid" id="gallery-grid"></div>
+      </div>
+    </div>
+  </main>
+
+  <script src="js/vendor/three.min.js"></script>
+  <script src="js/data.js"></script>
+  <script src="js/audio.js"></script>
+  <script src="js/state.js"></script>
+  <script src="js/textures.js"></script>
+  <script src="js/models.js"></script>
+  <script src="js/world.js"></script>
+  <script src="js/main.js"></script>
+</body>
+</html>
